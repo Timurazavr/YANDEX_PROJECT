@@ -1,6 +1,7 @@
 import sys
 from PyQt6 import QtCore, QtGui, QtWidgets
 from PyQt6.QtWidgets import QApplication, QMainWindow
+from start_menu import StartMenu
 
 
 class MainWin(QMainWindow):
@@ -22,14 +23,14 @@ class MainWin(QMainWindow):
         self.label.setFont(font)
         self.label.setScaledContents(False)
         self.label.setObjectName("label")
-        self.playButton = QtWidgets.QPushButton(parent=self.centralwidget)
-        self.playButton.setGeometry(QtCore.QRect(250, 290, 355, 221))
+        self.startButton = QtWidgets.QPushButton(parent=self.centralwidget)
+        self.startButton.setGeometry(QtCore.QRect(250, 290, 355, 221))
         font = QtGui.QFont()
         font.setPointSize(24)
         font.setBold(True)
         font.setWeight(75)
-        self.playButton.setFont(font)
-        self.playButton.setObjectName("playButton")
+        self.startButton.setFont(font)
+        self.startButton.setObjectName("startButton")
         self.setCentralWidget(self.centralwidget)
         self.retranslateUi(self)
         QtCore.QMetaObject.connectSlotsByName(self)
@@ -38,11 +39,15 @@ class MainWin(QMainWindow):
         _translate = QtCore.QCoreApplication.translate
         MainWindow.setWindowTitle(_translate("MainWindow", "Сапёр"))
         self.label.setText(_translate("MainWindow", "Сапёр PRO"))
-        self.playButton.setText(_translate("MainWindow", "Играть"))
+        self.startButton.setText(_translate("MainWindow", "Начать"))
 
     def __init__(self):
         super().__init__()
         self.setupUi()
+        self.startButton.clicked.connect(self.startmenu)
+
+    def startmenu(self):
+        StartMenu(self)
 
 
 if __name__ == "__main__":
