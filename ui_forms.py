@@ -198,13 +198,17 @@ class GameLogic:
             self.minefield = MineField(*self.settings, obj.coord)
         if obj.text() == "":
             result = self.minefield.open(*obj.coord)
-            for i in range(self.settings[1]):
-                for j in range(self.settings[0]):
-                    obj_b = self.btns[i][j]
-                    if result or self.minefield.visual_field[i][j] == "0":
-                        obj_b.setEnabled(False)
-                    if self.minefield.visual_field[i][j] != "0":
-                        obj_b.setText(self.minefield.visual_field[i][j])
+        elif obj.text() in "12345678":
+            result = self.minefield.click_num(*obj.coord)
+        for i in range(self.settings[1]):
+            for j in range(self.settings[0]):
+                obj_b = self.btns[i][j]
+                if result or self.minefield.visual_field[i][j] == "0":
+                    obj_b.setEnabled(False)
+                if self.minefield.visual_field[i][j] != "0":
+                    obj_b.setText(self.minefield.visual_field[i][j])
+        if result:
+            print(result)
 
 
 class DialogWindow(QtWidgets.QDialog):

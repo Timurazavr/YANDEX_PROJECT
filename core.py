@@ -1,7 +1,7 @@
 from random import sample
 
 settings = {
-    "Простой": (8, 8, 10),
+    "Простой": (8, 8, 6),
     "Средний": (16, 16, 40),
     "Сложный": (30, 16, 99),
     "Эксперт": (30, 20, 200),
@@ -50,11 +50,26 @@ class MineField:
             self.recur_open(i, j)
         return self.prov()
 
+    def click_num(self, i, j):
+        count = 0
+        for k in range(i - (i != 0), i + (i + 1 < self.rows) + 1):
+            for m in range(j - (j != 0), j + (j + 1 < self.cols) + 1):
+                if i != k or m != j:
+                    if self.visual_field[k][m] == "F":
+                        count += 1
+        if count == int(self.visual_field[i][j]):
+            for k in range(i - (i != 0), i + (i + 1 < self.rows) + 1):
+                for m in range(j - (j != 0), j + (j + 1 < self.cols) + 1):
+                    if (i != k or m != j) and self.visual_field[k][m] != "F":
+                        res = self.open(k, m)
+                        if res:
+                            return res
+
     def prov(self):
         for i in range(self.rows):
             for j in range(self.cols):
                 if (
-                    self.field[i][j] != "X"
+                    self.field[i][j] != "x"
                     and self.field[i][j] != self.visual_field[i][j]
                 ):
                     return
