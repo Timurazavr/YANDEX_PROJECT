@@ -135,34 +135,60 @@ class UiSetupGame:
 
 class UiGame:
     def setupUiGame(self):
+        if self.sender().text() in settings:
+            self.settings = settings[self.sender().text()]
         self.centralwidget = QtWidgets.QWidget(parent=self)
         self.centralwidget.setObjectName("centralwidget")
-        self.gridLayoutWidget = QtWidgets.QWidget(parent=self.centralwidget)
-        self.gridLayoutWidget.setGeometry(QtCore.QRect(60, 60, 781, 571))
-        self.gridLayoutWidget.setObjectName("gridLayoutWidget")
-        self.gridLayout = QtWidgets.QGridLayout(self.gridLayoutWidget)
-        self.gridLayout.setContentsMargins(0, 0, 0, 0)
-        self.gridLayout.setObjectName("gridLayout")
         self.pushButton = QtWidgets.QPushButton(parent=self.centralwidget)
         self.pushButton.setGeometry(QtCore.QRect(20, 10, 93, 28))
         self.pushButton.setObjectName("pushButton")
-        self.setCentralWidget(self.centralwidget)
 
-        _translate = QtCore.QCoreApplication.translate
-        self.pushButton.setText(_translate("MainWindow", "Выход"))
-
-        QtCore.QMetaObject.connectSlotsByName(self)
-
+        self.btns = [[] for _ in range(self.settings[1])]
         self.minefield = 0
-        if self.sender().text() in settings:
-            self.settings = settings[self.sender().text()]
+        self.btn_size = min(
+            (self.geometry().height() - 100) // self.settings[1],
+            (self.geometry().width() - 100) // self.settings[0],
+        )
         for i in range(self.settings[1]):
             for j in range(self.settings[0]):
-                x = QtWidgets.QPushButton()
+                x = QtWidgets.QPushButton(parent=self.centralwidget)
+                x.setGeometry(
+                    QtCore.QRect(
+                        50 + j * self.btn_size,
+                        50 + i * self.btn_size,
+                        self.btn_size,
+                        self.btn_size,
+                    )
+                )
                 x.coord = (i, j)
-                self.gridLayout.addWidget(x, i, j)
                 x.clicked.connect(self.clicked_item)
+                self.btns[i].append(x)
+        self.btn_geometry = QtCore.QRect(
+            50, 50, self.settings[0] * self.btn_size, self.settings[1] * self.btn_size
+        )
+
+        self.setCentralWidget(self.centralwidget)
+        _translate = QtCore.QCoreApplication.translate
+        self.pushButton.setText(_translate("MainWindow", "Выход"))
+        QtCore.QMetaObject.connectSlotsByName(self)
+
         self.pushButton.clicked.connect(self.setupUiStart)
+
+    def mousePressEvent(self, ev: QtGui.QMouseEvent):
+        if ev.button() == QtCore.Qt.MouseButton.RightButton:
+            if ev.position().toPoint() in self.btn_geometry:
+                pos = ev.position().toPoint()
+                i, j = (pos.y() - 50) // self.btn_size, (pos.x() - 50) // self.btn_size
+                obj = self.btns[i][j]
+                if obj.text() == "":
+                    obj.setText("F")
+                    obj.disconnect()
+                elif obj.text() == "F":
+                    obj.setText("?")
+                elif obj.text() == "?":
+                    obj.setText("")
+                    obj.clicked.connect(self.clicked_item)
+                self.minefield.visual_field[i][j] = obj.text()
 
 
 class GameLogic:
@@ -174,8 +200,8 @@ class GameLogic:
             result = self.minefield.open(*obj.coord)
             for i in range(self.settings[1]):
                 for j in range(self.settings[0]):
-                    obj_b = self.gridLayout.itemAtPosition(i, j).widget()
-                    if result or self.minefield.visual_field[i][j]:
+                    obj_b = self.btns[i][j]
+                    if result or self.minefield.visual_field[i][j] == "0":
                         obj_b.setEnabled(False)
                     if self.minefield.visual_field[i][j] != "0":
                         obj_b.setText(self.minefield.visual_field[i][j])

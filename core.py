@@ -44,6 +44,7 @@ class MineField:
     def open(self, i, j):
         self.visual_field[i][j] = self.field[i][j]
         if self.visual_field[i][j] == "x":
+            self.visual_field = self.field
             return "lose"
         if self.visual_field[i][j] == "0":
             self.recur_open(i, j)
@@ -57,4 +58,5 @@ class MineField:
                     and self.field[i][j] != self.visual_field[i][j]
                 ):
                     return
+        self.visual_field = self.field
         return "win"
