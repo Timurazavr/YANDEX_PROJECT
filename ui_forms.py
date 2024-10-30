@@ -126,6 +126,11 @@ class UiSetupGame:
         self.pushButton_2.clicked.connect(self.setupUiGame)
         self.pushButton_3.clicked.connect(self.setupUiGame)
         self.pushButton_4.clicked.connect(self.setupUiGame)
+        self.pushButton_5.clicked.connect(self.dial)
+
+    def dial(self):
+        obj = DialogWindow(self)
+        obj.show()
 
 
 class UiGame:
@@ -149,7 +154,8 @@ class UiGame:
         QtCore.QMetaObject.connectSlotsByName(self)
 
         self.minefield = 0
-        self.settings = settings[self.sender().text()]
+        if self.sender().text() in settings:
+            self.settings = settings[self.sender().text()]
         for i in range(self.settings[1]):
             for j in range(self.settings[0]):
                 x = QtWidgets.QPushButton()
@@ -173,3 +179,156 @@ class GameLogic:
                         obj_b.setEnabled(False)
                     if self.minefield.visual_field[i][j] != "0":
                         obj_b.setText(self.minefield.visual_field[i][j])
+
+
+class DialogWindow(QtWidgets.QDialog):
+    def setupUi(self, Dialog):
+        Dialog.setObjectName("Dialog")
+        Dialog.resize(400, 300)
+        self.widget = QtWidgets.QWidget(parent=Dialog)
+        self.widget.setGeometry(QtCore.QRect(70, 240, 261, 30))
+        self.widget.setObjectName("widget")
+        self.horizontalLayout_2 = QtWidgets.QHBoxLayout(self.widget)
+        self.horizontalLayout_2.setContentsMargins(0, 0, 0, 0)
+        self.horizontalLayout_2.setObjectName("horizontalLayout_2")
+        self.pushButton = QtWidgets.QPushButton(parent=self.widget)
+        self.pushButton.setObjectName("pushButton")
+        self.horizontalLayout_2.addWidget(self.pushButton)
+        self.pushButton_2 = QtWidgets.QPushButton(parent=self.widget)
+        self.pushButton_2.setObjectName("pushButton_2")
+        self.horizontalLayout_2.addWidget(self.pushButton_2)
+        self.widget1 = QtWidgets.QWidget(parent=Dialog)
+        self.widget1.setGeometry(QtCore.QRect(70, 60, 261, 121))
+        self.widget1.setObjectName("widget1")
+        self.horizontalLayout = QtWidgets.QHBoxLayout(self.widget1)
+        self.horizontalLayout.setContentsMargins(0, 0, 0, 0)
+        self.horizontalLayout.setObjectName("horizontalLayout")
+        self.verticalLayout_2 = QtWidgets.QVBoxLayout()
+        self.verticalLayout_2.setObjectName("verticalLayout_2")
+        self.label = QtWidgets.QLabel(parent=self.widget1)
+        sizePolicy = QtWidgets.QSizePolicy(
+            QtWidgets.QSizePolicy.Policy.Expanding,
+            QtWidgets.QSizePolicy.Policy.Preferred,
+        )
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.label.sizePolicy().hasHeightForWidth())
+        self.label.setSizePolicy(sizePolicy)
+        font = QtGui.QFont()
+        font.setPointSize(10)
+        self.label.setFont(font)
+        self.label.setObjectName("label")
+        self.verticalLayout_2.addWidget(self.label)
+        self.label_2 = QtWidgets.QLabel(parent=self.widget1)
+        sizePolicy = QtWidgets.QSizePolicy(
+            QtWidgets.QSizePolicy.Policy.Expanding,
+            QtWidgets.QSizePolicy.Policy.Preferred,
+        )
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.label_2.sizePolicy().hasHeightForWidth())
+        self.label_2.setSizePolicy(sizePolicy)
+        font = QtGui.QFont()
+        font.setPointSize(10)
+        self.label_2.setFont(font)
+        self.label_2.setObjectName("label_2")
+        self.verticalLayout_2.addWidget(self.label_2)
+        self.label_3 = QtWidgets.QLabel(parent=self.widget1)
+        sizePolicy = QtWidgets.QSizePolicy(
+            QtWidgets.QSizePolicy.Policy.Expanding,
+            QtWidgets.QSizePolicy.Policy.Preferred,
+        )
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.label_3.sizePolicy().hasHeightForWidth())
+        self.label_3.setSizePolicy(sizePolicy)
+        font = QtGui.QFont()
+        font.setPointSize(10)
+        self.label_3.setFont(font)
+        self.label_3.setObjectName("label_3")
+        self.verticalLayout_2.addWidget(self.label_3)
+        self.horizontalLayout.addLayout(self.verticalLayout_2)
+        self.verticalLayout = QtWidgets.QVBoxLayout()
+        self.verticalLayout.setObjectName("verticalLayout")
+        self.spinBox = QtWidgets.QSpinBox(parent=self.widget1)
+        sizePolicy = QtWidgets.QSizePolicy(
+            QtWidgets.QSizePolicy.Policy.Expanding,
+            QtWidgets.QSizePolicy.Policy.Expanding,
+        )
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.spinBox.sizePolicy().hasHeightForWidth())
+        self.spinBox.setSizePolicy(sizePolicy)
+        font = QtGui.QFont()
+        font.setPointSize(10)
+        self.spinBox.setFont(font)
+        self.spinBox.setMinimum(2)
+        self.spinBox.setMaximum(999)
+        self.spinBox.setObjectName("spinBox")
+        self.verticalLayout.addWidget(self.spinBox)
+        self.spinBox_2 = QtWidgets.QSpinBox(parent=self.widget1)
+        sizePolicy = QtWidgets.QSizePolicy(
+            QtWidgets.QSizePolicy.Policy.Minimum, QtWidgets.QSizePolicy.Policy.Expanding
+        )
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.spinBox_2.sizePolicy().hasHeightForWidth())
+        self.spinBox_2.setSizePolicy(sizePolicy)
+        font = QtGui.QFont()
+        font.setPointSize(10)
+        self.spinBox_2.setFont(font)
+        self.spinBox_2.setMinimum(2)
+        self.spinBox_2.setMaximum(999)
+        self.spinBox_2.setObjectName("spinBox_2")
+        self.verticalLayout.addWidget(self.spinBox_2)
+        self.spinBox_3 = QtWidgets.QSpinBox(parent=self.widget1)
+        sizePolicy = QtWidgets.QSizePolicy(
+            QtWidgets.QSizePolicy.Policy.Minimum, QtWidgets.QSizePolicy.Policy.Expanding
+        )
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.spinBox_3.sizePolicy().hasHeightForWidth())
+        self.spinBox_3.setSizePolicy(sizePolicy)
+        font = QtGui.QFont()
+        font.setPointSize(10)
+        self.spinBox_3.setFont(font)
+        self.spinBox_3.setMinimum(1)
+        self.spinBox_3.setMaximum(3)
+        self.spinBox_3.setObjectName("spinBox_3")
+        self.verticalLayout.addWidget(self.spinBox_3)
+        self.horizontalLayout.addLayout(self.verticalLayout)
+
+        self.retranslateUi(Dialog)
+        QtCore.QMetaObject.connectSlotsByName(Dialog)
+
+    def retranslateUi(self, Dialog):
+        _translate = QtCore.QCoreApplication.translate
+        Dialog.setWindowTitle(_translate("Dialog", "Dialog"))
+        self.pushButton.setText(_translate("Dialog", "Ок"))
+        self.pushButton_2.setText(_translate("Dialog", "Отмена"))
+        self.label.setText(_translate("Dialog", "Длина:"))
+        self.label_2.setText(_translate("Dialog", "Ширина:"))
+        self.label_3.setText(_translate("Dialog", "Кол-во мин:"))
+
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        self.setupUi(self)
+        self.pushButton.clicked.connect(self.ok)
+        self.pushButton_2.clicked.connect(self.cancel)
+        self.spinBox.valueChanged.connect(self.run)
+        self.spinBox_2.valueChanged.connect(self.run)
+
+    def run(self):
+        self.spinBox_3.setMaximum(self.spinBox.value() * self.spinBox_2.value() - 1)
+
+    def ok(self):
+        self.parent().settings = (
+            self.spinBox.value(),
+            self.spinBox_2.value(),
+            self.spinBox_3.value(),
+        )
+        self.destroy(True)
+        self.parent().setupUiGame()
+
+    def cancel(self):
+        self.destroy(True)
