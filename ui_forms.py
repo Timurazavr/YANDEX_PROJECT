@@ -1,5 +1,5 @@
 from PyQt6 import QtCore, QtGui, QtWidgets
-from core import MineField
+from core import MineField, settings
 
 
 class UiMain:
@@ -123,6 +123,9 @@ class UiSetupGame:
         QtCore.QMetaObject.connectSlotsByName(self)
 
         self.pushButton.clicked.connect(self.setupUiGame)
+        self.pushButton_2.clicked.connect(self.setupUiGame)
+        self.pushButton_3.clicked.connect(self.setupUiGame)
+        self.pushButton_4.clicked.connect(self.setupUiGame)
 
 
 class UiGame:
@@ -146,23 +149,27 @@ class UiGame:
         QtCore.QMetaObject.connectSlotsByName(self)
 
         self.minefield = 0
-        for i in range(5):
-            for j in range(5):
+        self.settings = settings[self.sender().text()]
+        for i in range(self.settings[1]):
+            for j in range(self.settings[0]):
                 x = QtWidgets.QPushButton()
                 x.coord = (i, j)
                 self.gridLayout.addWidget(x, i, j)
                 x.clicked.connect(self.clicked_item)
+        self.pushButton.clicked.connect(self.setupUiStart)
 
 
 class GameLogic:
     def clicked_item(self):
         obj = self.sender()
         if not self.minefield:
-            self.minefield = MineField(5, 5, 7, obj.coord)
+            self.minefield = MineField(*self.settings, obj.coord)
         if obj.text() == "":
-            self.minefield.open(*obj.coord)
-            for i in range(5):
-                for j in range(5):
-                    self.gridLayout.itemAtPosition(i, j).widget().setText(
-                        self.minefield.visual_field[i][j]
-                    )
+            result = self.minefield.open(*obj.coord)
+            for i in range(self.settings[1]):
+                for j in range(self.settings[0]):
+                    obj_b = self.gridLayout.itemAtPosition(i, j).widget()
+                    if result or self.minefield.visual_field[i][j]:
+                        obj_b.setEnabled(False)
+                    if self.minefield.visual_field[i][j] != "0":
+                        obj_b.setText(self.minefield.visual_field[i][j])

@@ -1,5 +1,6 @@
 import sys
 from PyQt6.QtWidgets import QApplication, QMainWindow
+from PyQt6 import QtCore, QtGui
 from ui_forms import UiMain, UiStartMenu, UiSetupGame, UiGame, GameLogic
 
 
