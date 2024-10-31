@@ -1,5 +1,7 @@
 from PyQt6 import QtCore, QtGui, QtWidgets
+from datetime import datetime
 from core import MineField, settings
+from db import write_db, read_db
 
 
 class UiMain:
@@ -41,17 +43,19 @@ class UiMain:
         self.label_2.setText(
             _translate(
                 "MainWindow",
-                "Версия игры: beta, просто основа игры, без нормального оформления",
+                "Версия игры: release, рабочий интерфейс, без нормального оформления",
             )
         )
 
         QtCore.QMetaObject.connectSlotsByName(self)
 
+        self.ingame = False
         self.startButton.clicked.connect(self.setupUiStart)
 
 
 class UiStartMenu:
     def setupUiStart(self):
+        self.ingame = False
         font = QtGui.QFont()
         font.setPointSize(20)
         self.setFont(font)
@@ -83,6 +87,69 @@ class UiStartMenu:
         QtCore.QMetaObject.connectSlotsByName(self)
 
         self.pushButton.clicked.connect(self.setupUiSetupGame)
+
+        self.pushButton_3.clicked.connect(self.setupUiStat)
+        try:
+            del self.minefield
+        except:
+            pass
+
+
+class UiStat:
+    def setupUiStat(self):
+        self.centralwidget = QtWidgets.QWidget(parent=self)
+        self.centralwidget.setObjectName("centralwidget")
+        self.pushButton = QtWidgets.QPushButton(parent=self.centralwidget)
+        self.pushButton.setGeometry(QtCore.QRect(910, 50, 161, 51))
+        self.pushButton.setObjectName("pushButton")
+        self.pushButton_2 = QtWidgets.QPushButton(parent=self.centralwidget)
+        self.pushButton_2.setGeometry(QtCore.QRect(70, 60, 111, 51))
+        self.pushButton_2.setObjectName("pushButton_2")
+        self.label = QtWidgets.QLabel(parent=self.centralwidget)
+        self.label.setGeometry(QtCore.QRect(480, 60, 161, 41))
+        font = QtGui.QFont()
+        font.setPointSize(12)
+        self.label.setFont(font)
+        self.label.setObjectName("label")
+        self.tableWidget = QtWidgets.QTableWidget(parent=self.centralwidget)
+        self.tableWidget.setGeometry(QtCore.QRect(130, 180, 871, 531))
+        self.tableWidget.setObjectName("tableWidget")
+        self.tableWidget.setColumnCount(0)
+        self.tableWidget.setRowCount(0)
+        self.setCentralWidget(self.centralwidget)
+
+        _translate = QtCore.QCoreApplication.translate
+        self.setWindowTitle(_translate("MainWindow", "MainWindow"))
+        self.pushButton.setText(_translate("MainWindow", "Статистика"))
+        self.pushButton_2.setText(_translate("MainWindow", "Назад"))
+        self.label.setText(_translate("MainWindow", "Сохранения:"))
+
+        QtCore.QMetaObject.connectSlotsByName(self)
+
+        self.tableWidget.setColumnCount(3)
+        self.tableWidget.setHorizontalHeaderLabels(
+            ("Имя сохранения", "Дата сохранения", "Нажмите для загрузки")
+        )
+        self.tableWidget.setRowCount(0)
+        for i, row in enumerate(read_db()):
+            self.tableWidget.setRowCount(self.tableWidget.rowCount() + 1)
+            for j, elem in enumerate(row):
+                if isinstance(elem, str):
+                    obj = QtWidgets.QTableWidgetItem(elem)
+                    self.tableWidget.setItem(i, j, obj)
+                else:
+                    obj = QtWidgets.QPushButton("+", self.tableWidget)
+                    obj.field = elem
+                    obj.clicked.connect(self.down_save)
+                    self.tableWidget.setCellWidget(i, j, obj)
+        self.tableWidget.resizeColumnsToContents()
+
+        self.pushButton_2.clicked.connect(self.setupUiStart)
+
+    def down_save(self):
+        self.minefield = self.sender().field
+        self.settings = (self.minefield.cols, self.minefield.rows)
+        self.setupUiGame(fl=False)
 
 
 class UiSetupGame:
@@ -134,7 +201,8 @@ class UiSetupGame:
 
 
 class UiGame:
-    def setupUiGame(self):
+    def setupUiGame(self, *args, fl=True):
+        self.ingame = True
         if self.sender().text() in settings:
             self.settings = settings[self.sender().text()]
         self.centralwidget = QtWidgets.QWidget(parent=self)
@@ -142,9 +210,13 @@ class UiGame:
         self.pushButton = QtWidgets.QPushButton(parent=self.centralwidget)
         self.pushButton.setGeometry(QtCore.QRect(20, 10, 93, 28))
         self.pushButton.setObjectName("pushButton")
+        self.pushButton_2 = QtWidgets.QPushButton(parent=self.centralwidget)
+        self.pushButton_2.setGeometry(QtCore.QRect(120, 10, 93, 28))
+        self.pushButton_2.setObjectName("pushButton_2")
 
         self.btns = [[] for _ in range(self.settings[1])]
-        self.minefield = 0
+        if fl:
+            self.minefield = 0
         self.btn_size = min(
             (self.geometry().height() - 100) // self.settings[1],
             (self.geometry().width() - 100) // self.settings[0],
@@ -166,16 +238,39 @@ class UiGame:
         self.btn_geometry = QtCore.QRect(
             50, 50, self.settings[0] * self.btn_size, self.settings[1] * self.btn_size
         )
+        if not fl:
+            result = False
+            for i in range(self.settings[1]):
+                if "x" in self.minefield.visual_field[i]:
+                    result = True
+                    break
+            for i in range(self.settings[1]):
+                for j in range(self.settings[0]):
+                    obj_b = self.btns[i][j]
+                    if result or self.minefield.visual_field[i][j] == "0":
+                        obj_b.setEnabled(False)
+                    if self.minefield.visual_field[i][j] != "0":
+                        obj_b.setText(self.minefield.visual_field[i][j])
 
         self.setCentralWidget(self.centralwidget)
         _translate = QtCore.QCoreApplication.translate
         self.pushButton.setText(_translate("MainWindow", "Выход"))
+        self.pushButton_2.setText(_translate("MainWindow", "Сохранить"))
         QtCore.QMetaObject.connectSlotsByName(self)
 
         self.pushButton.clicked.connect(self.setupUiStart)
+        self.pushButton_2.clicked.connect(self.save_game)
+
+    def save_game(self):
+        if self.minefield:
+            name, fl = QtWidgets.QInputDialog.getText(
+                self, "Диалоговое окно", "Введите имя сохранения:"
+            )
+            if fl:
+                write_db(name, datetime.now(), self.minefield)
 
     def mousePressEvent(self, ev: QtGui.QMouseEvent):
-        if ev.button() == QtCore.Qt.MouseButton.RightButton:
+        if self.ingame and ev.button() == QtCore.Qt.MouseButton.RightButton:
             if ev.position().toPoint() in self.btn_geometry:
                 pos = ev.position().toPoint()
                 i, j = (pos.y() - 50) // self.btn_size, (pos.x() - 50) // self.btn_size
@@ -193,7 +288,7 @@ class UiGame:
 
 class GameLogic:
     def clicked_item(self):
-        obj = self.sender()
+        obj, result = self.sender(), None
         if not self.minefield:
             self.minefield = MineField(*self.settings, obj.coord)
         if obj.text() == "":
@@ -207,8 +302,6 @@ class GameLogic:
                     obj_b.setEnabled(False)
                 if self.minefield.visual_field[i][j] != "0":
                     obj_b.setText(self.minefield.visual_field[i][j])
-        if result:
-            print(result)
 
 
 class DialogWindow(QtWidgets.QDialog):
