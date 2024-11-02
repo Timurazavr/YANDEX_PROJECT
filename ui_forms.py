@@ -1,7 +1,7 @@
 from PyQt6 import QtCore, QtGui, QtWidgets
 from datetime import datetime
 from core import MineField, settings
-from db import write_db, read_db
+from db import write_db, read_db, write_txt, read_txt
 
 
 class UiMain:
@@ -145,11 +145,19 @@ class UiStat:
         self.tableWidget.resizeColumnsToContents()
 
         self.pushButton_2.clicked.connect(self.setupUiStart)
+        self.pushButton.clicked.connect(self.run_stat)
 
     def down_save(self):
         self.minefield = self.sender().field
-        self.settings = (self.minefield.cols, self.minefield.rows)
+        self.settings = (
+            self.minefield.cols,
+            self.minefield.rows,
+            sum(i.count("x") for i in self.minefield.field),
+        )
         self.setupUiGame(fl=False)
+
+    def run_stat(self):
+        StatisticWindow(self).show()
 
 
 class UiSetupGame:
@@ -202,7 +210,8 @@ class UiSetupGame:
 
 class UiGame:
     def setupUiGame(self, *args, fl=True):
-        self.ingame = True
+        write_txt("all")
+        self.slsh = self.sender().text()
         if self.sender().text() in settings:
             self.settings = settings[self.sender().text()]
         self.centralwidget = QtWidgets.QWidget(parent=self)
@@ -213,7 +222,13 @@ class UiGame:
         self.pushButton_2 = QtWidgets.QPushButton(parent=self.centralwidget)
         self.pushButton_2.setGeometry(QtCore.QRect(120, 10, 93, 28))
         self.pushButton_2.setObjectName("pushButton_2")
-
+        self.lcdNumber = QtWidgets.QLCDNumber(parent=self.centralwidget)
+        self.lcdNumber.setGeometry(QtCore.QRect(260, 0, 111, 51))
+        self.lcdNumber.setObjectName("lcdNumber")
+        self.lcdNumber_2 = QtWidgets.QLCDNumber(parent=self.centralwidget)
+        self.lcdNumber_2.setGeometry(QtCore.QRect(450, 0, 111, 51))
+        self.lcdNumber_2.setObjectName("lcdNumber_2")
+        self.lcdNumber.display(self.settings[2])
         self.btns = [[] for _ in range(self.settings[1])]
         if fl:
             self.minefield = 0
@@ -238,7 +253,13 @@ class UiGame:
         self.btn_geometry = QtCore.QRect(
             50, 50, self.settings[0] * self.btn_size, self.settings[1] * self.btn_size
         )
+
         if not fl:
+            self.ingame = True
+            self.lcdNumber.display(
+                self.settings[2]
+                - sum(i.count("F") for i in self.minefield.visual_field)
+            )
             result = False
             for i in range(self.settings[1]):
                 if "x" in self.minefield.visual_field[i]:
@@ -251,6 +272,9 @@ class UiGame:
                         obj_b.setEnabled(False)
                     if self.minefield.visual_field[i][j] != "0":
                         obj_b.setText(self.minefield.visual_field[i][j])
+        self.timer = QtCore.QTimer()
+        self.timer.timeout.connect(self.showTime)
+        self.timer.start(1000)
 
         self.setCentralWidget(self.centralwidget)
         _translate = QtCore.QCoreApplication.translate
@@ -284,13 +308,19 @@ class UiGame:
                     obj.setText("")
                     obj.clicked.connect(self.clicked_item)
                 self.minefield.visual_field[i][j] = obj.text()
+                self.lcdNumber.display(
+                    self.settings[2]
+                    - sum(i.count("F") for i in self.minefield.visual_field)
+                )
 
 
 class GameLogic:
     def clicked_item(self):
+        self.ingame = True
         obj, result = self.sender(), None
         if not self.minefield:
             self.minefield = MineField(*self.settings, obj.coord)
+            self.minefield.c = 0
         if obj.text() == "":
             result = self.minefield.open(*obj.coord)
         elif obj.text() in "12345678":
@@ -302,6 +332,51 @@ class GameLogic:
                     obj_b.setEnabled(False)
                 if self.minefield.visual_field[i][j] != "0":
                     obj_b.setText(self.minefield.visual_field[i][j])
+        if result:
+            self.timer.stop()
+            write_txt(result)
+            if result == "win":
+                write_txt(**{self.slsh: self.minefield.c})
+
+    def showTime(self):
+        if self.ingame:
+            self.minefield.c += 1
+            self.lcdNumber_2.display(self.minefield.c)
+
+
+class StatisticWindow(QtWidgets.QDialog):
+    def setupUi(self, Dialog):
+        Dialog.setObjectName("Dialog")
+        Dialog.resize(400, 300)
+        self.label = QtWidgets.QLabel(parent=Dialog)
+        self.label.setGeometry(QtCore.QRect(20, 20, 400, 200))
+        font = QtGui.QFont()
+        font.setPointSize(10)
+        self.label.setFont(font)
+        self.label.setObjectName("label")
+        self.retranslateUi(Dialog)
+        QtCore.QMetaObject.connectSlotsByName(Dialog)
+
+    def retranslateUi(self, Dialog):
+        _translate = QtCore.QCoreApplication.translate
+        Dialog.setWindowTitle(_translate("Dialog", "Диалоговое окно"))
+
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        self.setupUi(self)
+        sl = read_txt()
+        self.label.setText(
+            """
+Всего начато партий: {}, Выиграно: {}, Проиграно : {},
+Рекорды:
+Простой: {}
+Средний: {}
+Сложный: {}
+Эксперт: {}
+""".format(
+                sl["all"], sl["win"], sl["lose"], *sl["records"].values()
+            )
+        )
 
 
 class DialogWindow(QtWidgets.QDialog):
@@ -426,7 +501,7 @@ class DialogWindow(QtWidgets.QDialog):
 
     def retranslateUi(self, Dialog):
         _translate = QtCore.QCoreApplication.translate
-        Dialog.setWindowTitle(_translate("Dialog", "Dialog"))
+        Dialog.setWindowTitle(_translate("Dialog", "Диалоговое окно"))
         self.pushButton.setText(_translate("Dialog", "Ок"))
         self.pushButton_2.setText(_translate("Dialog", "Отмена"))
         self.label.setText(_translate("Dialog", "Длина:"))
