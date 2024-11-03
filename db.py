@@ -7,11 +7,27 @@ con = sqlite3.connect("db.sqlite")
 
 def write_db(name, datetime, save):
     cur = con.cursor()
-    cur.execute(
-        """INSERT INTO Saving (name, datetime, save) VALUES (?, ?, ?)""",
-        (name, str(datetime)[:19], pickle.dumps(save)),
-    )
-    con.commit()
+    res = cur.execute(
+        """SELECT name FROM Saving
+            WHERE name = ?""",
+        (name),
+    ).fetchall()
+    cur = con.cursor()
+    if res:
+        cur.execute(
+            """UPDATE Saving
+                SET datetime = ?,
+                    save = ?
+                WHERE name = ?""",
+            (str(datetime)[:19], pickle.dumps(save), name),
+        )
+        con.commit()
+    else:
+        cur.execute(
+            """INSERT INTO Saving (name, datetime, save) VALUES (?, ?, ?)""",
+            (name, str(datetime)[:19], pickle.dumps(save)),
+        )
+        con.commit()
 
 
 def read_db():
@@ -36,5 +52,3 @@ def write_txt(*args, **kwargs):
 def read_txt():
     with open("records.txt", encoding="utf8") as f:
         return json.loads(f.read())
-
-
