@@ -12,6 +12,7 @@ class MainWindow(QMainWindow):
         self.setObjectName("mainWindow")
         self.showMaximized()
         self.setCursor(QtGui.QCursor(QtGui.QPixmap("shovel.png")))
+        self.setWindowIcon(QtGui.QIcon("icon.ico"))
         self.setAutoFillBackground(False)
         self.centralwidget = QtWidgets.QWidget(parent=self)
         self.centralwidget.setObjectName("centralwidget")
