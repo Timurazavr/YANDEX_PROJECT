@@ -8,12 +8,10 @@ con = sqlite3.connect("db.sqlite")
 def write_db(name, datetime, save):
     cur = con.cursor()
     res = cur.execute(
-        """SELECT name FROM Saving
-            WHERE name = ?""",
-        (name),
+        f"""SELECT name FROM Saving""",
     ).fetchall()
     cur = con.cursor()
-    if res:
+    if (name,) in res:
         cur.execute(
             """UPDATE Saving
                 SET datetime = ?,
@@ -21,13 +19,12 @@ def write_db(name, datetime, save):
                 WHERE name = ?""",
             (str(datetime)[:19], pickle.dumps(save), name),
         )
-        con.commit()
     else:
         cur.execute(
             """INSERT INTO Saving (name, datetime, save) VALUES (?, ?, ?)""",
             (name, str(datetime)[:19], pickle.dumps(save)),
         )
-        con.commit()
+    con.commit()
 
 
 def read_db():

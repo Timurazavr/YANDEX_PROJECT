@@ -2,7 +2,8 @@ from PyQt6 import QtCore, QtGui, QtWidgets
 from db import read_txt
 
 
-def main_ui(self):
+def main_ui(self: QtWidgets.QMainWindow):
+    self.setMinimumSize(self.width(), self.height())
     self.setStyleSheet(
         """MainWindow#mainWindow {border-image: url("main_background.png")};"""
     )
@@ -10,7 +11,12 @@ def main_ui(self):
     self.centralwidget.setObjectName("centralwidget")
     label = QtWidgets.QLabel(parent=self.centralwidget)
     label.setGeometry(
-        QtCore.QRect(self.width() // 2 - 250, self.height() // 4, 500, 200)
+        QtCore.QRect(
+            self.width() // 4,
+            self.height() // 4,
+            self.width() // 2,
+            self.height() // 4,
+        )
     )
     font = QtGui.QFont()
     font.setPointSize(56)
@@ -29,14 +35,23 @@ def main_ui(self):
     label.setGraphicsEffect(shadow)
     self.menuButton = QtWidgets.QPushButton(parent=self.centralwidget)
     self.menuButton.setGeometry(
-        QtCore.QRect(self.width() // 2 - 250, self.height() // 2, 500, 200)
+        QtCore.QRect(
+            self.width() // 3,
+            self.height() // 2,
+            self.width() // 3,
+            self.height() // 4,
+        )
     )
     self.fontBtn, self.styleBtn = (
         QtGui.QFont(),
         "background: rgb(91,44,11); border-radius: 30px",
     )
+    self.col = QtGui.QColor(255, 255, 255)
+    self.col_text = QtGui.QColor(0, 0, 0)
+    self.col_d = self.col.darker(130)
+    self.col_d_text = QtGui.QColor(255, 255, 255)
     self.fontBtn.setFamily("Franklin Gothic Medium")
-    self.fontBtn.setPointSize(48)
+    self.fontBtn.setPointSize(36)
     self.menuButton.setFont(self.fontBtn)
     self.menuButton.setStyleSheet(self.styleBtn)
     self.menuButton.setObjectName("menuButton")
@@ -52,17 +67,38 @@ def setup_ui(self):
     self.centralwidget = QtWidgets.QWidget(parent=self)
     self.centralwidget.setObjectName("centralwidget")
     self.startButton = QtWidgets.QPushButton(parent=self.centralwidget)
-    self.startButton.setGeometry(QtCore.QRect(self.width() // 2 - 350, 450, 700, 250))
+    self.startButton.setGeometry(
+        QtCore.QRect(
+            int(self.width() * 0.267),
+            int(self.height() * 0.562),
+            int(self.width() * 0.466),
+            int(self.height() * 0.312),
+        )
+    )
     self.startButton.setFont(self.fontBtn)
     self.startButton.setStyleSheet(self.styleBtn)
     self.startButton.setObjectName("startButton")
     self.redesignButton = QtWidgets.QPushButton(parent=self.centralwidget)
-    self.redesignButton.setGeometry(QtCore.QRect(100, 100, 500, 200))
+    self.redesignButton.setGeometry(
+        QtCore.QRect(
+            self.width() // 15,
+            self.height() // 8,
+            self.width() // 3,
+            self.height() // 4,
+        )
+    )
     self.redesignButton.setFont(self.fontBtn)
     self.redesignButton.setStyleSheet(self.styleBtn)
     self.redesignButton.setObjectName("redesignButton")
     self.analyticsButton = QtWidgets.QPushButton(parent=self.centralwidget)
-    self.analyticsButton.setGeometry(QtCore.QRect(self.width() // 5 * 3, 100, 500, 200))
+    self.analyticsButton.setGeometry(
+        QtCore.QRect(
+            int(self.width() * 0.6),
+            self.height() // 8,
+            self.width() // 3,
+            self.height() // 4,
+        )
+    )
     self.analyticsButton.setFont(self.fontBtn)
     self.analyticsButton.setStyleSheet(self.styleBtn)
     self.analyticsButton.setObjectName("analyticsButton")
@@ -79,7 +115,14 @@ def setup_game_ui(self):
     self.centralwidget = QtWidgets.QWidget(parent=self)
     self.centralwidget.setObjectName("centralwidget")
     label = QtWidgets.QLabel(parent=self.centralwidget)
-    label.setGeometry(QtCore.QRect(self.width() // 2 - 350, 25, 700, 100))
+    label.setGeometry(
+        QtCore.QRect(
+            int(self.width() * 0.267),
+            self.height() // 32,
+            int(self.width() * 0.466),
+            self.height() // 8,
+        )
+    )
     font = QtGui.QFont()
     font.setPointSize(50)
     font.setFamily("Segoe Print")
@@ -89,30 +132,61 @@ def setup_game_ui(self):
     label.setAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
     label.setObjectName("label")
     self.plainButton = QtWidgets.QPushButton(parent=self.centralwidget)
-    self.plainButton.setGeometry(QtCore.QRect(self.width() // 2 - 350, 150, 700, 100))
+    self.plainButton.setGeometry(
+        QtCore.QRect(
+            int(self.width() * 0.267),
+            int(self.height() * 0.187),
+            int(self.width() * 0.466),
+            self.height() // 8,
+        )
+    )
     self.plainButton.setFont(self.fontBtn)
     self.plainButton.setStyleSheet(self.styleBtn)
     self.plainButton.setObjectName("plainButton")
     self.averageButton = QtWidgets.QPushButton(parent=self.centralwidget)
-    self.averageButton.setGeometry(QtCore.QRect(self.width() // 2 - 350, 275, 700, 100))
+    self.averageButton.setGeometry(
+        QtCore.QRect(
+            int(self.width() * 0.267),
+            int(self.height() * 0.343),
+            int(self.width() * 0.466),
+            self.height() // 8,
+        )
+    )
     self.averageButton.setFont(self.fontBtn)
     self.averageButton.setStyleSheet(self.styleBtn)
     self.averageButton.setObjectName("averageButton")
     self.complicatedButton = QtWidgets.QPushButton(parent=self.centralwidget)
     self.complicatedButton.setGeometry(
-        QtCore.QRect(self.width() // 2 - 350, 400, 700, 100)
+        QtCore.QRect(
+            int(self.width() * 0.267),
+            self.height() // 2,
+            int(self.width() * 0.466),
+            self.height() // 8,
+        )
     )
     self.complicatedButton.setFont(self.fontBtn)
     self.complicatedButton.setStyleSheet(self.styleBtn)
     self.complicatedButton.setObjectName("complicatedButton")
     self.expertButton = QtWidgets.QPushButton(parent=self.centralwidget)
-    self.expertButton.setGeometry(QtCore.QRect(self.width() // 2 - 350, 525, 700, 100))
+    self.expertButton.setGeometry(
+        QtCore.QRect(
+            int(self.width() * 0.267),
+            int(self.height() * 0.656),
+            int(self.width() * 0.466),
+            self.height() // 8,
+        )
+    )
     self.expertButton.setFont(self.fontBtn)
     self.expertButton.setStyleSheet(self.styleBtn)
     self.expertButton.setObjectName("expertButton")
     self.customizableButton = QtWidgets.QPushButton(parent=self.centralwidget)
     self.customizableButton.setGeometry(
-        QtCore.QRect(self.width() // 2 - 350, 650, 700, 100)
+        QtCore.QRect(
+            int(self.width() * 0.267),
+            int(self.height() * 0.812),
+            int(self.width() * 0.466),
+            self.height() // 8,
+        )
     )
     self.customizableButton.setFont(self.fontBtn)
     self.customizableButton.setStyleSheet(self.styleBtn)
@@ -129,21 +203,103 @@ def setup_game_ui(self):
     self.customizableButton.setText(_translate("MainWindow", "Настраиваемый"))
 
 
+def redesign_ui(self):
+    self.centralwidget = QtWidgets.QWidget(parent=self)
+    self.centralwidget.setObjectName("centralwidget")
+    self.backButton = QtWidgets.QPushButton(parent=self.centralwidget)
+    self.backButton.setGeometry(
+        QtCore.QRect(
+            self.width() // 30,
+            self.height() // 8,
+            int(self.width() * 0.45),
+            self.height() // 4,
+        )
+    )
+    self.backButton.setFont(self.fontBtn)
+    self.backButton.setStyleSheet(self.styleBtn)
+    self.backButton.setObjectName("backButton")
+    self.colorButton = QtWidgets.QPushButton(parent=self.centralwidget)
+    self.colorButton.setGeometry(
+        QtCore.QRect(
+            self.width() // 30,
+            int(self.height() * 0.625),
+            int(self.width() * 0.45),
+            self.height() // 4,
+        )
+    )
+    self.colorButton.setFont(self.fontBtn)
+    self.colorButton.setStyleSheet(self.styleBtn)
+    self.colorButton.setObjectName("colorButton")
+    self.flagButton = QtWidgets.QPushButton(parent=self.centralwidget)
+    self.flagButton.setGeometry(
+        QtCore.QRect(
+            int(self.width() * 0.516),
+            self.height() // 8,
+            int(self.width() * 0.45),
+            self.height() // 4,
+        )
+    )
+    self.flagButton.setFont(self.fontBtn)
+    self.flagButton.setStyleSheet(self.styleBtn)
+    self.flagButton.setObjectName("flagButton")
+    self.mineButton = QtWidgets.QPushButton(parent=self.centralwidget)
+    self.mineButton.setGeometry(
+        QtCore.QRect(
+            int(self.width() * 0.516),
+            int(self.height() * 0.625),
+            int(self.width() * 0.45),
+            self.height() // 4,
+        )
+    )
+    self.mineButton.setFont(self.fontBtn)
+    self.mineButton.setStyleSheet(self.styleBtn)
+    self.mineButton.setObjectName("mineButton")
+
+    _translate = QtCore.QCoreApplication.translate
+    self.backButton.setText(_translate("MainWindow", "Назад"))
+    self.colorButton.setText(_translate("MainWindow", "Сменить цвет кнопки"))
+    self.flagButton.setText(_translate("MainWindow", "Сменить символ флага"))
+    self.mineButton.setText(_translate("MainWindow", "Сменить символ мины"))
+
+    self.setCentralWidget(self.centralwidget)
+
+
 def analytics_ui(self):
     self.centralwidget = QtWidgets.QWidget(parent=self)
     self.centralwidget.setObjectName("centralwidget")
     self.backButton = QtWidgets.QPushButton(parent=self.centralwidget)
-    self.backButton.setGeometry(QtCore.QRect(50, 50, 400, 100))
+    self.backButton.setGeometry(
+        QtCore.QRect(
+            self.width() // 30,
+            self.height() // 16,
+            int(self.width() * 0.266),
+            self.height() // 8,
+        )
+    )
     self.backButton.setFont(self.fontBtn)
     self.backButton.setStyleSheet(self.styleBtn)
     self.backButton.setObjectName("backButton")
     self.statisticButton = QtWidgets.QPushButton(parent=self.centralwidget)
-    self.statisticButton.setGeometry(QtCore.QRect(self.width() - 450, 50, 400, 100))
+    self.statisticButton.setGeometry(
+        QtCore.QRect(
+            int(self.width() * 0.7),
+            self.height() // 16,
+            int(self.width() * 0.266),
+            self.height() // 8,
+        )
+    )
     self.statisticButton.setFont(self.fontBtn)
     self.statisticButton.setStyleSheet(self.styleBtn)
     self.statisticButton.setObjectName("statisticButton")
     label = QtWidgets.QLabel(parent=self.centralwidget)
-    label.setGeometry(QtCore.QRect(450, 50, self.width() - 900, 100))
+    label.setGeometry(
+        QtCore.QRect(
+            int(self.width() * 0.3),
+            self.height() // 16,
+            int(self.width() * 0.4),
+            self.height() // 8,
+        )
+    )
     font = QtGui.QFont()
     font.setPointSize(50)
     font.setFamily("Segoe Print")
@@ -154,7 +310,12 @@ def analytics_ui(self):
     label.setObjectName("label")
     self.tableWidget = QtWidgets.QTableWidget(parent=self.centralwidget)
     self.tableWidget.setGeometry(
-        QtCore.QRect(450, 200, self.width() - 900, self.height() - 250)
+        QtCore.QRect(
+            int(self.width() * 0.3),
+            self.height() // 4,
+            int(self.width() * 0.4),
+            int(self.height() * 0.688),
+        )
     )
     self.tableWidget.setObjectName("tableWidget")
     self.tableWidget.setColumnCount(3)
@@ -176,26 +337,54 @@ def game_ui(self, fl=True):
     self.centralwidget.setObjectName("centralwidget")
     font, style = (
         QtGui.QFont(),
-        "background: rgb(91,44,11); border-radius: 10px",
+        "background: rgb(91,44,11); border-radius: 5px",
     )
     font.setFamily("Franklin Gothic Medium")
     font.setPointSize(24)
     self.leaveButton = QtWidgets.QPushButton(parent=self.centralwidget)
-    self.leaveButton.setGeometry(QtCore.QRect(25, 25, 200, 50))
+    self.leaveButton.setGeometry(
+        QtCore.QRect(
+            self.width() // 60,
+            self.height() // 32,
+            int(self.width() * 0.133),
+            self.height() // 16,
+        )
+    )
     self.leaveButton.setStyleSheet(style)
     self.leaveButton.setFont(font)
     self.leaveButton.setObjectName("leaveButton")
     self.saveButton = QtWidgets.QPushButton(parent=self.centralwidget)
-    self.saveButton.setGeometry(QtCore.QRect(250, 25, 200, 50))
+    self.saveButton.setGeometry(
+        QtCore.QRect(
+            int(self.width() * 0.166),
+            self.height() // 32,
+            int(self.width() * 0.133),
+            self.height() // 16,
+        )
+    )
     self.saveButton.setStyleSheet(style)
     self.saveButton.setFont(font)
     self.saveButton.setObjectName("saveButton")
     self.mineLabel = QtWidgets.QLabel(parent=self.centralwidget)
-    self.mineLabel.setGeometry(QtCore.QRect(self.width() // 2 - 150, 25, 100, 50))
+    self.mineLabel.setGeometry(
+        QtCore.QRect(
+            int(self.width() * 0.5),
+            self.height() // 32,
+            self.width() // 15,
+            self.height() // 16,
+        )
+    )
     self.mineLabel.setFont(font)
     self.mineLabel.setObjectName("mineLabel")
     self.timerLabel = QtWidgets.QLabel(parent=self.centralwidget)
-    self.timerLabel.setGeometry(QtCore.QRect(self.width() // 2 + 50, 25, 100, 50))
+    self.timerLabel.setGeometry(
+        QtCore.QRect(
+            int(self.width() * 0.7),
+            self.height() // 32,
+            self.width() // 15,
+            self.height() // 16,
+        )
+    )
     self.timerLabel.setFont(font)
     self.timerLabel.setObjectName("timerLabel")
 
@@ -210,11 +399,11 @@ def game_ui(self, fl=True):
 class StatisticWindow(QtWidgets.QDialog):
     def setupUi(self, Dialog):
         Dialog.setObjectName("Dialog")
-        Dialog.resize(400, 300)
+        Dialog.setFixedSize(450, 260)
         self.label = QtWidgets.QLabel(parent=Dialog)
-        self.label.setGeometry(QtCore.QRect(20, 20, 400, 200))
+        self.label.setGeometry(QtCore.QRect(0, 0, 450, 260))
         font = QtGui.QFont()
-        font.setPointSize(10)
+        font.setPointSize(24)
         self.label.setFont(font)
         self.label.setObjectName("label")
         self.retranslateUi(Dialog)
@@ -229,14 +418,12 @@ class StatisticWindow(QtWidgets.QDialog):
         self.setupUi(self)
         sl = read_txt()
         self.label.setText(
-            """
-Всего начато партий: {}, Выиграно: {}, Проиграно : {},
+            """Всего начато партий: {}
+Выиграно: {}, Проиграно : {}
+
 Рекорды:
-Простой: {}
-Средний: {}
-Сложный: {}
-Эксперт: {}
-""".format(
+Простой: {}, Средний: {},
+Сложный: {}, Эксперт: {}""".format(
                 sl["all"], sl["win"], sl["lose"], *sl["records"].values()
             )
         )
@@ -324,7 +511,7 @@ class DialogWindow(QtWidgets.QDialog):
         font.setPointSize(10)
         self.spinBox.setFont(font)
         self.spinBox.setMinimum(2)
-        self.spinBox.setMaximum(999)
+        self.spinBox.setMaximum(50)
         self.spinBox.setObjectName("spinBox")
         self.verticalLayout.addWidget(self.spinBox)
         self.spinBox_2 = QtWidgets.QSpinBox(parent=self.widget1)
@@ -339,7 +526,7 @@ class DialogWindow(QtWidgets.QDialog):
         font.setPointSize(10)
         self.spinBox_2.setFont(font)
         self.spinBox_2.setMinimum(2)
-        self.spinBox_2.setMaximum(999)
+        self.spinBox_2.setMaximum(50)
         self.spinBox_2.setObjectName("spinBox_2")
         self.verticalLayout.addWidget(self.spinBox_2)
         self.spinBox_3 = QtWidgets.QSpinBox(parent=self.widget1)
