@@ -68,14 +68,14 @@ class MainWindow(QMainWindow):
         name, fl = QtWidgets.QInputDialog.getText(
             self, "Диалоговое окно", "Введите символ флага:"
         )
-        if name and fl and name != settings["mine_sim"]:
+        if name and fl and name != settings["mine_sim"] and not name[0].isdigit():
             settings["flag_sim"] = name[0]
 
     def mine_change(self):
         name, fl = QtWidgets.QInputDialog.getText(
             self, "Диалоговое окно", "Введите символ мины:"
         )
-        if name and fl and name != settings["flag_sim"]:
+        if name and fl and name != settings["flag_sim"] and not name[0].isdigit():
             settings["mine_sim"] = name[0]
 
     def analytics_ui_run(self):
